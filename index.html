@@ -55,19 +55,15 @@
   </label>
 
   <label>Magazyn energii (kWh):
-    <select id="battery">
-      <option value="0">Brak magazynu</option>
-      <option value="5">5 kWh</option>
-      <option value="10">10 kWh</option>
-      <option value="15">15 kWh</option>
-      <option value="20">20 kWh</option>
-      <option value="25">25 kWh</option>
-      <option value="30">30 kWh</option>
-      <option value="35">35 kWh</option>
-      <option value="40">40 kWh</option>
-      <option value="45">45 kWh</option>
-      <option value="50">50 kWh</option>
-    </select>
+ <select id="battery">
+  <option value="0">Brak magazynu</option>
+  <option value="5">5 kWh</option>
+  <option value="10">10 kWh</option>
+  <option value="12">12 kWh</option>
+  <option value="14">14 kWh</option>
+  <option value="16">16 kWh</option>
+  <option value="24">24 kWh</option>
+</select>
   </label>
 
   <label>Wybrana moc instalacji (kW):
@@ -96,7 +92,14 @@
       const suggestedPower = (bill * 0.0225).toFixed(2);
 
       const pvPrice = power * 2500;
-      const batteryPrice = battery * 1200;
+      const batteryPrices = {
+  0: 0,
+  5: 5000,
+  10: 8000,
+  12: 9000,
+  14: 10000,
+  16: 11000,
+  24: 15000
       const turbinePrice = turbine === "3" ? 12000 : turbine === "6" ? 24000 : 0;
       const total = pvPrice + batteryPrice + turbinePrice;
 
