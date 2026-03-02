@@ -3,125 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kalkulator PV</title>
-  <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; }
-    label { display: block; margin-top: 16px; }
-    input { width: 100%; padding: 8px; margin-top: 4px; }
-    button { margin-top: 20px; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
-    #result { margin-top: 24px; font-size: 1.2rem; font-weight: bold; }
-  </style>
+  <title>Test Kalkulator PV</title>
 </head>
 <body>
-  <h1>Kalkulator Fotowoltaiczny (PV)</h1>
-  <p>Wprowadź miesięczny rachunek za prąd, wybierz typ obiektu, miejsce montażu oraz moc instalacji.</p>
+  <h1>Test Kalkulator PV</h1>
 
-  <label>Miesięczny rachunek za prąd (zł):
+  <label>Miesięczny rachunek (zł):
     <input id="bill" type="number" placeholder="np. 300" />
   </label>
 
-  <label>Typ obiektu:
-    <select id="type">
-      <option value="dom">Dom jednorodzinny</option>
-      <option value="firma">Firma</option>
-      <option value="gospodarstwo">Gospodarstwo rolne</option>
-    </select>
-  </label>
-
-  <label>Miejsce montażu:
-    <select id="mount" onchange="toggleRoofType()">
-      <option value="dach">Dach</option>
-      <option value="grunt">Grunt</option>
-    </select>
-  </label>
-
-  <label id="roofTypeLabel">Rodzaj pokrycia dachu:
-    <select id="roofType">
-      <option value="blacha">Blacha</option>
-      <option value="dachowka">Dachówka</option>
-    </select>
-  </label>
-
-  <label>Turbina wiatrowa:
-    <select id="turbine">
-      <option value="0">Brak turbiny</option>
-      <option value="3">3 kW</option>
-      <option value="6">6 kW</option>
-    </select>
-  </label>
-
-  <label>Rabat (zł) (%):
-    <input id="margin" type="number" placeholder="np. 10" />
-  </label>
-
-  <label>Magazyn energii (kWh):
- <select id="battery">
-  <option value="0">Brak magazynu</option>
-  <option value="5">5 kWh</option>
-  <option value="10">10 kWh</option>
-  <option value="12">12 kWh</option>
-  <option value="14">14 kWh</option>
-  <option value="16">16 kWh</option>
-  <option value="24">24 kWh</option>
-</select>
-  </label>
-
-  <label>Wybrana moc instalacji (kW):
+  <label>Wybrana moc (kW):
     <input id="power" type="number" placeholder="np. 5" />
   </label>
 
-  <button onclick="calculate()">Oblicz</button>
+  <label>Magazyn energii:
+    <select id="battery">
+      <option value="0">Brak</option>
+      <option value="5">5 kWh</option>
+      <option value="10">10 kWh</option>
+      <option value="12">12 kWh</option>
+      <option value="14">14 kWh</option>
+      <option value="16">16 kWh</option>
+      <option value="24">24 kWh</option>
+    </select>
+  </label>
+
+  <button id="calcBtn">Oblicz</button>
 
   <div id="result"></div>
 
   <script>
-    function calculate() {
+    document.getElementById('calcBtn').addEventListener('click', function() {
       const bill = parseFloat(document.getElementById('bill').value);
-      const type = document.getElementById('type').value;
-      const mount = document.getElementById('mount').value;
-      const roofType = document.getElementById('roofType')?.value;
       const power = parseFloat(document.getElementById('power').value);
-      const battery = parseFloat(document.getElementById('battery').value);
-      const turbine = document.getElementById('turbine').value;
+      const battery = document.getElementById('battery').value;
 
-      if (!bill || !power) {
-        document.getElementById('result').innerText = "Uzupełnij wszystkie pola.";
+      if (isNaN(bill) || isNaN(power)) {
+        document.getElementById('result').innerText = "Uzupełnij rachunek i moc.";
         return;
       }
 
-      const suggestedPower = (bill * 0.0225).toFixed(2);
-
       const pvPrice = power * 2500;
-      const batteryPrices = {
-  0: 0,
-  5: 5000,
-  10: 8000,
-  12: 9000,
-  14: 10000,
-  16: 11000,
-  24: 15000
-      const turbinePrice = turbine === "3" ? 12000 : turbine === "6" ? 24000 : 0;
-      const total = pvPrice + batteryPrice + turbinePrice;
 
-      document.getElementById('result').innerText = `Rachunek: ${bill} zł/mies.
-Typ obiektu: ${type}
-Montaż: ${mount}${mount === 'dach' ? ', pokrycie: ' + roofType : ''}
-Wybrana moc: ${power} kW
-Sugerowana moc instalacji: ${suggestedPower} kW
-Magazyn energii: ${battery} kWh
-Turbina wiatrowa: ${turbine} kW
-Koszt instalacji PV: ${pvPrice} zł
-Koszt magazynu energii: ${batteryPrice} zł
-Koszt turbiny: ${turbinePrice} zł
-Łączny koszt: ${total} zł
-Cena po rabacie: ${(total + (parseFloat(document.getElementById('margin').value)||0)).toFixed(2)} zł`;
-    }
+      let batteryPrice = 0;
+      switch(battery) {
+        case "5": batteryPrice = 5000; break;
+        case "10": batteryPrice = 8000; break;
+        case "12": batteryPrice = 9000; break;
+        case "14": batteryPrice = 10000; break;
+        case "16": batteryPrice = 11000; break;
+        case "24": batteryPrice = 15000; break;
+      }
 
-    function toggleRoofType() {
-      const mount = document.getElementById('mount').value;
-      document.getElementById('roofTypeLabel').style.display = mount === 'dach' ? 'block' : 'none';
-    }
-    window.onload = toggleRoofType;
+      const total = pvPrice + batteryPrice;
+
+      document.getElementById('result').innerText =
+        `Koszt PV: ${pvPrice} zł\nKoszt magazynu: ${batteryPrice} zł\nŁączny koszt: ${total} zł`;
+    });
   </script>
 </body>
 </html>
