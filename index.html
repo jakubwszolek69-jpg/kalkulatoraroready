@@ -13,6 +13,7 @@
     table { border-collapse: collapse; width: 100%; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background: #f0f0f0; }
+    #toggleDiscount { cursor:pointer; color:orange; font-weight:bold; margin-left:8px; }
   </style>
 </head>
 <body>
@@ -54,13 +55,6 @@
     </select>
   </label>
 
-  <label>Rabat (zł):
-   <label style="display:none;">
-  Rabat (zł):
-  <input id="margin" type="number" value="0" />
-</label>
-  </label>
-
   <label>Magazyn energii (kWh):
     <select id="battery">
       <option value="0">Brak magazynu</option>
@@ -78,6 +72,11 @@
   </label>
 
   <button id="calculateBtn">Oblicz</button>
+  <span id="toggleDiscount">⭐</span>
+  <label id="discountLabel" style="display:none; margin-top:10px;">
+    Rabat (zł):
+    <input id="margin" type="number" value="0" />
+  </label>
 
   <div id="result"></div>
 
@@ -118,7 +117,7 @@
 
       const turbinePrice = turbine === "3" ? 12000 : turbine === "6" ? 24000 : 0;
       const total = pvPrice + batteryPrice + turbinePrice;
-      const finalPrice = total + discount;
+      const finalPrice = total + discount; // rabat dodawany
 
       document.getElementById('result').innerHTML = `
         <table>
@@ -145,7 +144,15 @@
     }
 
     window.onload = toggleRoofType;
+
+    // Obsługa przycisku Oblicz
     document.getElementById('calculateBtn').addEventListener('click', calculate);
+
+    // Obsługa gwiazdki do pokazywania pola rabatu
+    document.getElementById('toggleDiscount').addEventListener('click', function() {
+      const label = document.getElementById('discountLabel');
+      label.style.display = label.style.display === 'none' ? 'block' : 'none';
+    });
   </script>
 
 </body>
