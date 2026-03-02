@@ -63,3 +63,85 @@
   </script>
 </body>
 </html>
+<script>
+function formatCurrency(value) {
+  return value.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN', minimumFractionDigits: 0 });
+}
+
+function calculate() {
+  // Pobieramy wartości
+  const bill = parseFloat(document.getElementById('bill').value);
+  const type = document.getElementById('type').value;
+  const mount = document.getElementById('mount').value;
+
+  const roofTypeElement = document.getElementById('roofType');
+  const roofType = roofTypeElement ? roofTypeElement.value : "";
+
+  const power = parseFloat(document.getElementById('power').value);
+  const battery = document.getElementById('battery').value;
+  const turbine = document.getElementById('turbine').value;
+  const discount = parseFloat(document.getElementById('margin').value) || 0;
+
+  // Walidacja
+  if (isNaN(bill) || isNaN(power)) {
+    document.getElementById('result').innerHTML = "<p style='color:red'>Uzupełnij rachunek i moc instalacji.</p>";
+    return;
+  }
+
+  // Sugerowana moc instalacji
+  const suggestedPower = (bill * 0.0225).toFixed(2);
+
+  // Koszt PV
+  const pvPrice = power * 2500;
+
+  // Koszt magazynu według stałych cen
+  let batteryPrice = 0;
+  switch(battery) {
+    case "5": batteryPrice = 5000; break;
+    case "10": batteryPrice = 8000; break;
+    case "12": batteryPrice = 9000; break;
+    case "14": batteryPrice = 10000; break;
+    case "16": batteryPrice = 11000; break;
+    case "24": batteryPrice = 15000; break;
+    default: batteryPrice = 0;
+  }
+
+  // Koszt turbiny
+  const turbinePrice = turbine === "3" ? 12000 : turbine === "6" ? 24000 : 0;
+
+  // Łączny koszt
+  const total = pvPrice + batteryPrice + turbinePrice;
+  const finalPrice = total - discount;
+
+  // Wyświetlenie w tabeli
+  document.getElementById('result').innerHTML = `
+  <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%; font-family: sans-serif;">
+    <tr><th colspan="2" style="background:#f0f0f0;">Podsumowanie instalacji PV</th></tr>
+    <tr><td>Rachunek miesięczny</td><td>${formatCurrency(bill)}</td></tr>
+    <tr><td>Typ obiektu</td><td>${type}</td></tr>
+    <tr><td>Montaż</td><td>${mount}${mount === 'dach' ? ', ' + roofType : ''}</td></tr>
+    <tr><td>Wybrana moc instalacji</td><td>${power} kW</td></tr>
+    <tr><td>Sugerowana moc instalacji</td><td>${suggestedPower} kW</td></tr>
+    <tr><td>Magazyn energii</td><td>${battery} kWh</td></tr>
+    <tr><td>Koszt magazynu</td><td>${formatCurrency(batteryPrice)}</td></tr>
+    <tr><td>Koszt instalacji PV</td><td>${formatCurrency(pvPrice)}</td></tr>
+    <tr><td>Koszt turbiny</td><td>${formatCurrency(turbinePrice)}</td></tr>
+    <tr><td>Łączny koszt</td><td>${formatCurrency(total)}</td></tr>
+    <tr><td>Rabat</td><td>${formatCurrency(discount)}</td></tr>
+    <tr><th>Cena po rabacie</th><th>${formatCurrency(finalPrice)}</th></tr>
+  </table>
+  `;
+}
+
+// Widoczność pola pokrycia dachu
+function toggleRoofType() {
+  const mount = document.getElementById('mount').value;
+  document.getElementById('roofTypeLabel').style.display = mount === 'dach' ? 'block' : 'none';
+}
+
+// Ukrycie dachu przy starcie
+window.onload = toggleRoofType;
+
+// Upewniamy się, że przycisk działa
+document.getElementById('calculateBtn')?.addEventListener('click', calculate);
+</script>
